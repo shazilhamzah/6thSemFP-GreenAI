@@ -1,0 +1,10 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+codecarbon
+numpy
+Pillow
+prefetch_generator
+ptflops
+Requests
+scikit-learn
+torch
+torchvision
