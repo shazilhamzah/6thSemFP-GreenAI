@@ -55,18 +55,26 @@ python RePlayItStraight\src\re_play_it_straight\main_re_play_it_straight.py --da
 
 ### Subset run (low-spec machine or quick testing)
 
-Uses 1,000 samples instead of the full dataset:
+Uses 1,000 samples instead of the full dataset. Set `--workers 0` to prevent memory issues:
 
 ```powershell
-python RePlayItStraight\src\re_play_it_straight\main_re_play_it_straight.py --dataset MNIST --subset 1000 --batch-size 32 --epochs 5 --n-query 100
+python RePlayItStraight\src\re_play_it_straight\main_re_play_it_straight.py --dataset MNIST --subset 1000 --batch-size 32 --epochs 5 --n-query 100 --workers 0
+```
+
+### Ultra-Light run (if 1,000 samples are still slow)
+
+Uses only 200 samples and minimal epochs:
+
+```powershell
+python RePlayItStraight\src\re_play_it_straight\main_re_play_it_straight.py --dataset MNIST --subset 200 --batch-size 16 --epochs 2 --n-query 50 --workers 0
 ```
 
 ### Cross-validation
 
-5-fold cross-validation on a 1,000-sample subset:
+5-fold cross-validation on a 200-sample subset:
 
 ```powershell
-python RePlayItStraight\src\re_play_it_straight\main_cross_validation_re_play_it_straight.py --dataset MNIST --subset 1000
+python RePlayItStraight\src\re_play_it_straight\main_cross_validation_re_play_it_straight.py --dataset MNIST --subset 200 --batch-size 16 --workers 0
 ```
 
 ---

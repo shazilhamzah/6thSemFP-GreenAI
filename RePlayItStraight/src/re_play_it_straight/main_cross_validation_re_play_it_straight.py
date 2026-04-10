@@ -2,7 +2,6 @@ import random
 import nets
 import copy
 import torch
-import torchtune
 import datasets_
 import methods
 import numpy as np
@@ -260,7 +259,7 @@ if __name__ == "__main__":
     for test_index in range(portions):
         train_subsets = copy.deepcopy(subsets)
         train_subsets.pop(test_index)
-        train_dataset = torchtune.datasets.ConcatDataset(train_subsets)
+        train_dataset = torch.utils.data.ConcatDataset(train_subsets)
         train_lengths = [int(len(train_dataset) * 0.75), int(len(train_dataset) * 0.05), int(len(train_dataset) * 0.20)]
         subset_train, subset_validation, subset_test = torch.utils.data.random_split(train_dataset, train_lengths)
 
