@@ -5,11 +5,16 @@ import numpy
 import torch
 import torch.nn as nn
 
+# --- AMP IMPORTS ---
+from torch.cuda.amp import autocast, GradScaler
+
 from argparse import ArgumentTypeError
 from prefetch_generator import BackgroundGenerator
 from sklearn.metrics import precision_score, recall_score, f1_score
 from src.re_play_it_straight.support.support import clprint, Reason
 
+# Initialize the global scaler for AMP
+scaler = GradScaler()
 
 class WeightedSubset(torch.utils.data.Subset):
     def __init__(self, dataset, indices, weights) -> None:
@@ -37,25 +42,32 @@ def train(train_loader, network, criterion, optimizer, scheduler, epoch, args, r
         if if_weighted:
             target = contents[0][1].to(args.device)
             input = contents[0][0].to(args.device)
-            # Compute output
-            output = network(input)
             weights = contents[1].to(args.device).requires_grad_(False)
-            loss = torch.sum(criterion(output, target) * weights) / torch.sum(weights)
+            
+            # --- AMP Forward Pass ---
+            with autocast():
+                output = network(input)
+                loss = torch.sum(criterion(output, target) * weights) / torch.sum(weights)
 
         else:
             target = contents[1].to(args.device)
             input = contents[0].to(args.device)
-            # Compute output
-            output = network(input)
-            loss = criterion(output, target).mean()
+            
+            # --- AMP Forward Pass ---
+            with autocast():
+                output = network(input)
+                loss = criterion(output, target).mean()
 
         # Measure accuracy and record loss
         prec1 = accuracy(output.data, target, topk=(1,))[0]
         losses.update(loss.data.item(), input.size(0))
         top1.update(prec1.item(), input.size(0))
-        # Compute gradient and do SGD step
-        loss.backward()
-        optimizer.step()
+        
+        # --- AMP Backward Pass & Optimizer Step ---
+        scaler.scale(loss).backward()
+        scaler.step(optimizer)
+        scaler.update()
+        
         scheduler.step()
         backward_steps += 1
         # Measure elapsed time
@@ -64,7 +76,6 @@ def train(train_loader, network, criterion, optimizer, scheduler, epoch, args, r
 
     record_train_stats(rec, epoch, losses.avg, top1.avg, optimizer.state_dict()['param_groups'][0]['lr'])
     return losses.avg, backward_steps
-
 
 def test(test_loader, network, criterion, epoch, args, rec):
     batch_time = AverageMeter('Time', ':6.3f')
@@ -83,10 +94,12 @@ def test(test_loader, network, criterion, epoch, args, rec):
     for i, (input, target) in enumerate(test_loader):
         target = target.to(args.device)
         input = input.to(args.device)
-        # Compute output
+        
+        # --- AMP Evaluation Pass ---
         with torch.no_grad():
-            output = network(input)
-            loss = criterion(output, target).mean()
+            with autocast():
+                output = network(input)
+                loss = criterion(output, target).mean()
 
         # Measure accuracy and record loss
         prec1 = accuracy(output.data, target, topk=(1,))[0]
@@ -112,7 +125,6 @@ def test(test_loader, network, criterion, epoch, args, rec):
 
     network.no_grad = False
     return accuracy_am.avg, precision_am.avg, recall_am.avg, f1_am.avg
-
 
 class AverageMeter(object):
     def __init__(self, name, fmt=':f'):

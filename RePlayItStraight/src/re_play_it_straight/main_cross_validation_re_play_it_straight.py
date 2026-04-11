@@ -6,6 +6,7 @@ import datasets_
 import methods
 import numpy as np
 import torch.optim as optim
+import logging
 
 from torch.utils.data import DataLoader
 from codecarbon import EmissionsTracker
@@ -253,24 +254,57 @@ if __name__ == "__main__":
 
     portions = 5
     whole_size = int(len(dst_train)/portions)
-    lengths = [whole_size for _ in range(portions)]
-    subsets = torch.utils.data.random_split(dst_train, lengths)
+    remainder = len(dst_train) - (whole_size * portions)
+    lengths = [whole_size + (1 if i < remainder else 0) for i in range(portions)]
+
+    # Locked generator for deterministic splits
+    gen = torch.Generator().manual_seed(args.seed)
+    subsets = torch.utils.data.random_split(dst_train, lengths, generator=gen)
+
+    # --- PAPER CORRECTION: CodeCarbon Energy Tracking Start ---
+    logging.getLogger("codecarbon").disabled = True
+    try:
+        # We try to start the tracker
+        tracker = EmissionsTracker(project_name=f"RePlayItStraight_{args.dataset}")
+        tracker.start()
+    except Exception as e:
+        # If the NVIDIA GPU blocks it, we catch the error here instead of crashing
+        print(f"\n[!] HARDWARE WARNING: CodeCarbon failed to start -> {e}")
+        print("[!] Your GPU does not support NVML energy tracking. Training will proceed WITHOUT energy tracking...\n")
+        tracker = None  # Set to None so we know it failed
 
     for test_index in range(portions):
+        print(f"\n==================== Fold {test_index + 1}/{portions} ====================")
         train_subsets = copy.deepcopy(subsets)
         train_subsets.pop(test_index)
         train_dataset = torch.utils.data.ConcatDataset(train_subsets)
-        train_lengths = [int(len(train_dataset) * 0.75), int(len(train_dataset) * 0.05), int(len(train_dataset) * 0.20)]
-        subset_train, subset_validation, subset_test = torch.utils.data.random_split(train_dataset, train_lengths)
+        
+        train_len = int(len(train_dataset) * 0.75)
+        val_len = int(len(train_dataset) * 0.05)
+        test_len = len(train_dataset) - train_len - val_len
+        train_lengths = [train_len, val_len, test_len]
+        
+        # Lock inner splits as well
+        subset_train, subset_validation, subset_test = torch.utils.data.random_split(train_dataset, train_lengths, generator=gen)
 
         if args.dataset == "ImageNet" or args.dataset == "ImageNet30":
             train_loader = DataLoaderX(subset_train, batch_size=args.batch_size, shuffle=True, num_workers=args.workers, pin_memory=False)
             validation_loader = DataLoaderX(subset_validation, batch_size=args.test_batch_size, shuffle=False, num_workers=args.workers, pin_memory=False)
             evaluation_loader = DataLoaderX(subset_test, batch_size=args.test_batch_size, shuffle=False, num_workers=args.workers, pin_memory=False)
-
         else:
             train_loader = torch.utils.data.DataLoader(subset_train, batch_size=args.batch_size, shuffle=True, num_workers=args.workers, pin_memory=False)
             validation_loader = torch.utils.data.DataLoader(subset_validation, batch_size=args.test_batch_size, shuffle=False, num_workers=args.workers, pin_memory=False)
             evaluation_loader = torch.utils.data.DataLoader(subset_test, batch_size=args.test_batch_size, shuffle=False, num_workers=args.workers, pin_memory=False)
 
         run_experiment(train_loader, validation_loader, evaluation_loader, args)
+        
+    # --- PAPER CORRECTION: CodeCarbon Energy Tracking Stop ---
+    if tracker is not None:
+        emissions = tracker.stop()
+        print(f"\n{'='*50}")
+        print(f"Total Experiment Emissions: {emissions} kg CO2eq")
+        print(f"{'='*50}")
+    else:
+        print(f"\n{'='*50}")
+        print("Experiment completed! (Energy emissions were not recorded due to GPU limitations)")
+        print(f"{'='*50}")

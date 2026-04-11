@@ -5,6 +5,7 @@ import datasets_
 import methods as methods
 import numpy as np
 import torch.optim as optim
+import logging
 
 from torch.utils.data import DataLoader
 from codecarbon import EmissionsTracker
@@ -61,6 +62,8 @@ def rs2_training(dst_train, args, network, train_loader, test_loader, boot_epoch
 
 
 if __name__ == "__main__":
+    from codecarbon import EmissionsTracker
+    
     args = parser.parse_args()
     cuda = ""
     if args.gpu is not None:
@@ -89,12 +92,27 @@ if __name__ == "__main__":
         dst_train = torch.utils.data.Subset(dst_train, subset_indices)
         if dst_u_all is not None:
             dst_u_all = torch.utils.data.Subset(dst_u_all, subset_indices)
+
+    # --- PAPER CORRECTION: CodeCarbon Energy Tracking Start ---
+    logging.getLogger("codecarbon").disabled = True 
+    try:
+        # We try to start the tracker
+        tracker = EmissionsTracker(project_name=f"RePlayItStraight_{args.dataset}")
+        tracker.start()
+    except Exception as e:
+        # If the NVIDIA GPU blocks it, we catch the error here instead of crashing
+        print(f"\n[!] HARDWARE WARNING: CodeCarbon failed to start -> {e}")
+        print("[!] Your GPU does not support NVML energy tracking. Training will proceed WITHOUT energy tracking...\n")
+        tracker = None  # Set to None so we know it failed
     
     # BackgroundGenerator for ImageNet to speed up dataloaders
     train_size = int(len(dst_train) * 0.80)
     validation_size = len(dst_train) - train_size
     train_lengths = [train_size, validation_size]
-    subset_train, subset_validation = torch.utils.data.random_split(dst_train, train_lengths)
+    
+    # --- PAPER CORRECTION: Deterministic Split ---
+    gen = torch.Generator().manual_seed(args.seed)
+    subset_train, subset_validation = torch.utils.data.random_split(dst_train, train_lengths, generator=gen)
 
     if args.dataset == "ImageNet" or args.dataset == "ImageNet30":
         train_loader = DataLoaderX(subset_train, batch_size=args.batch_size, shuffle=True, num_workers=args.workers, pin_memory=False)
@@ -264,3 +282,14 @@ if __name__ == "__main__":
     clprint(recall, Reason.OUTPUT_TRAINING)
     clprint("F1:", Reason.OUTPUT_TRAINING)
     clprint(f1, Reason.OUTPUT_TRAINING)
+
+    # --- PAPER CORRECTION: CodeCarbon Energy Tracking Stop ---
+    if tracker is not None:
+        emissions = tracker.stop()
+        print(f"\n{'='*50}")
+        print(f"Total Experiment Emissions: {emissions} kg CO2eq")
+        print(f"{'='*50}")
+    else:
+        print(f"\n{'='*50}")
+        print("Experiment completed! (Energy emissions were not recorded due to GPU limitations)")
+        print(f"{'='*50}")
