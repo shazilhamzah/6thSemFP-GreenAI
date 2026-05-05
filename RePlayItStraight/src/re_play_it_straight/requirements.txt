@@ -8,3 +8,4 @@ Requests
 scikit-learn
 torch
 torchvision
+kagglehub

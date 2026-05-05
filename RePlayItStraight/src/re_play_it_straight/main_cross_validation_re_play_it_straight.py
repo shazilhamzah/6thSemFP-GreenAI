@@ -72,8 +72,18 @@ def run_experiment(train_loader, validation_loader, evaluation_loader, args):
     # RS2 boot training
     print("==================== RS2 boot training ====================")
     print("RS2 split size: {}".format(int(len(dst_train) / args.n_split)))
-    accuracy, precision, recall, f1, steps = rs2_training(dst_train, args, network, train_loader, validation_loader, args.boot_epochs, args.n_split)
+    best_accuracy, precision, recall, f1, steps = rs2_training(dst_train, args, network, train_loader, validation_loader, args.boot_epochs, args.n_split)
     tot_backward_steps += steps
+
+    # Save initial best model after boot for this fold
+    if args.save_path:
+        fold_id = getattr(args, 'current_fold', 0)
+        save_checkpoint({
+            'fold': fold_id,
+            'epoch': args.boot_epochs,
+            'state_dict': network.state_dict(),
+            'best_acc1': best_accuracy,
+        }, os.path.join(args.save_path, f"best_model_{args.dataset}_fold{fold_id}.pth"), args.boot_epochs, best_accuracy)
     # Active learning cycles
     # Initialize Unlabeled Set & Labeled Set
     indices = list(range(len(dst_train)))
@@ -90,6 +100,7 @@ def run_experiment(train_loader, validation_loader, evaluation_loader, args):
     previous_loss = None
     n_rs2_refresh = 0
     
+    accuracy = best_accuracy
     while accuracy < args.target_accuracy:
         cycle += 1
         print("====================Cycle: {}====================".format(cycle))
@@ -180,6 +191,18 @@ def run_experiment(train_loader, validation_loader, evaluation_loader, args):
 
         else:
             accuracy, precision, recall, f1 = test(validation_loader, network, criterion, epoch, args, rec)
+
+        # Check and save best model for this fold
+        if accuracy > best_accuracy:
+            best_accuracy = accuracy
+            if args.save_path:
+                fold_id = getattr(args, 'current_fold', 0)
+                save_checkpoint({
+                    'fold': fold_id,
+                    'cycle': cycle,
+                    'state_dict': network.state_dict(),
+                    'best_acc1': best_accuracy,
+                }, os.path.join(args.save_path, f"best_model_{args.dataset}_fold{fold_id}.pth"), cycle, best_accuracy)
 
         previous_loss = current_loss
         clprint(f"Cycle {cycle} || Label set size {len(labeled_set)} | Accuracy: {accuracy}, Precision: {precision}, Recall: {recall}, F1: {f1}", reason=Reason.OUTPUT_TRAINING)
@@ -275,6 +298,7 @@ if __name__ == "__main__":
 
     for test_index in range(portions):
         print(f"\n==================== Fold {test_index + 1}/{portions} ====================")
+        args.current_fold = test_index + 1
         train_subsets = copy.deepcopy(subsets)
         train_subsets.pop(test_index)
         train_dataset = torch.utils.data.ConcatDataset(train_subsets)

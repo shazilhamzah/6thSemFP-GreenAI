@@ -133,8 +133,17 @@ if __name__ == "__main__":
     # RS2 boot training
     print("==================== RS2 boot training ====================")
     print("RS2 split size: {}".format(int(len(dst_train) / args.n_split)))
-    accuracy, precision, recall, f1, steps = rs2_training(dst_train, args, network, train_loader, validation_loader, args.boot_epochs, args.n_split)
+    best_accuracy, precision, recall, f1, steps = rs2_training(dst_train, args, network, train_loader, validation_loader, args.boot_epochs, args.n_split)
     tot_backward_steps += steps
+
+    # Save initial best model after boot
+    if args.save_path:
+        save_checkpoint({
+            'epoch': args.boot_epochs,
+            'state_dict': network.state_dict(),
+            'best_acc1': best_accuracy,
+            'optimizer': None, # Initial boot
+        }, os.path.join(args.save_path, f"best_model_{args.dataset}.pth"), args.boot_epochs, best_accuracy)
 
     # Active learning cycles
     # Initialize Unlabeled Set & Labeled Set
@@ -151,6 +160,7 @@ if __name__ == "__main__":
     current_loss = None
     previous_loss = None
     n_rs2_refresh = 0
+    accuracy = best_accuracy
     while accuracy < args.target_accuracy:
         cycle += 1
         print("====================Cycle: {}====================".format(cycle))
@@ -242,6 +252,16 @@ if __name__ == "__main__":
 
         else:
             accuracy, precision, recall, f1 = test(validation_loader, network, criterion, epoch, args, rec)
+
+        # Check and save best model
+        if accuracy > best_accuracy:
+            best_accuracy = accuracy
+            if args.save_path:
+                save_checkpoint({
+                    'cycle': cycle,
+                    'state_dict': network.state_dict(),
+                    'best_acc1': best_accuracy,
+                }, os.path.join(args.save_path, f"best_model_{args.dataset}.pth"), cycle, best_accuracy)
 
         previous_loss = current_loss
         clprint(f"Cycle {cycle} || Label set size {len(labeled_set)} | Accuracy: {accuracy}, Precision: {precision}, Recall: {recall}, F1: {f1}", reason=Reason.OUTPUT_TRAINING)

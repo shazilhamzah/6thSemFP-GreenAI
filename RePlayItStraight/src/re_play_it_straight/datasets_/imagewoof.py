@@ -4,6 +4,8 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision.datasets import ImageFolder
 from torch import tensor, long
 from PIL import Image
+import os
+from src.re_play_it_straight.support.kaggle_utils import download_from_kaggle
 
 
 class ImagewoofDataset(Dataset):
@@ -52,9 +54,13 @@ def Imagewoof(args):
     #if args.resolution == 32: TODO
     train_transform, test_transform = get_augmentations_32(T_normalize) #TODO
 
-    dst_train = ImagewoofDataset(args.data_path + '/Imagewoof/train/', transform=train_transform, resolution=args.resolution)
-    dst_unlabeled = ImagewoofDataset(args.data_path + '/Imagewoof/train/', transform=test_transform, resolution=args.resolution)
-    dst_test = ImagewoofDataset(args.data_path + '/Imagewoof/val/', transform=test_transform, resolution=args.resolution)
+    dataset_dir = os.path.join(args.data_path, 'Imagewoof')
+    if not os.path.exists(dataset_dir):
+        download_from_kaggle("frabbisw/imagewoof", dataset_dir)
+
+    dst_train = ImagewoofDataset(dataset_dir + '/train/', transform=train_transform, resolution=args.resolution)
+    dst_unlabeled = ImagewoofDataset(dataset_dir + '/train/', transform=test_transform, resolution=args.resolution)
+    dst_test = ImagewoofDataset(dataset_dir + '/val/', transform=test_transform, resolution=args.resolution)
     class_names = dst_train.classes
     dst_train.targets = tensor(dst_train.targets, dtype=long)
     dst_test.targets = tensor(dst_test.targets, dtype=long)

@@ -1,3 +1,4 @@
+import os
 from torchvision import datasets
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms as T
@@ -14,9 +15,15 @@ def CIFAR100(args):
 
     train_transform = T.Compose([T.RandomHorizontalFlip(), T.RandomCrop(size=32, padding=4), T.ToTensor(), T.Normalize(mean=mean, std=std)])
     test_transform = T.Compose([T.ToTensor(), T.Normalize(mean=mean, std=std)])
-    dst_train = datasets.CIFAR100(args.data_path+'/cifar100', train=True, download=True, transform=train_transform)
-    dst_unlabeled = datasets.CIFAR100(args.data_path+'/cifar100', train=True, download=True, transform=test_transform)
-    dst_test = datasets.CIFAR100(args.data_path+'/cifar100', train=False, download=True, transform=test_transform)
+    
+    dataset_dir = args.data_path + '/cifar100'
+    if not os.path.exists(dataset_dir):
+        from src.re_play_it_straight.support.kaggle_utils import download_from_kaggle
+        download_from_kaggle("fedesoriano/cifar100-python", dataset_dir)
+        
+    dst_train = datasets.CIFAR100(dataset_dir, train=True, download=True, transform=train_transform)
+    dst_unlabeled = datasets.CIFAR100(dataset_dir, train=True, download=True, transform=test_transform)
+    dst_test = datasets.CIFAR100(dataset_dir, train=False, download=True, transform=test_transform)
     class_names = dst_train.classes
     dst_train.targets = tensor(dst_train.targets, dtype=long)
     dst_test.targets = tensor(dst_test.targets, dtype=long)

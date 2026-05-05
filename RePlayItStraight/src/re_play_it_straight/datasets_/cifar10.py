@@ -1,6 +1,7 @@
 from torchvision import datasets
 from torchvision import transforms as T
 from torch import tensor, long
+import os
 
 
 def CIFAR10(args):
@@ -12,9 +13,17 @@ def CIFAR10(args):
 
     train_transform = T.Compose([T.RandomHorizontalFlip(), T.RandomCrop(size=32, padding=4), T.ToTensor(), T.Normalize(mean=mean, std=std)])
     test_transform = T.Compose([T.ToTensor(), T.Normalize(mean=mean, std=std)])
-    dst_train = datasets.CIFAR10(args.data_path+'/cifar10', train=True, download=True, transform=train_transform)
-    dst_unlabeled = datasets.CIFAR10(args.data_path+'/cifar10', train=True, download=False, transform=test_transform)
-    dst_test = datasets.CIFAR10(args.data_path+'/cifar10', train=False, download=False, transform=test_transform)
+    
+    dataset_dir = args.data_path + '/cifar10'
+    if not os.path.exists(dataset_dir):
+        from src.re_play_it_straight.support.kaggle_utils import download_from_kaggle
+        download_from_kaggle("fedesoriano/cifar10-python", dataset_dir)
+        # torchvision expects a specific subfolder structure if it's already there
+        # We might need to move things around if kaggle structure differs
+    
+    dst_train = datasets.CIFAR10(dataset_dir, train=True, download=True, transform=train_transform)
+    dst_unlabeled = datasets.CIFAR10(dataset_dir, train=True, download=False, transform=test_transform)
+    dst_test = datasets.CIFAR10(dataset_dir, train=False, download=False, transform=test_transform)
     class_names = dst_train.classes
     dst_train.targets = tensor(dst_train.targets, dtype=long)
     dst_test.targets = tensor(dst_test.targets, dtype=long)

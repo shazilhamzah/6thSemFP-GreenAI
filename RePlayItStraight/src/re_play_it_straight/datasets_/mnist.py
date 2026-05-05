@@ -22,9 +22,15 @@ def MNIST(args, permuted=False, permutation_seed=None):
     train_transform = T.Compose([T.RandomHorizontalFlip(), T.RandomCrop(size=28, padding=4), T.ToTensor(), T.Normalize(mean=mean, std=std)])
     test_transform = T.Compose([T.ToTensor(), T.Normalize(mean=mean, std=std)])
     
-    dst_train = datasets.MNIST(args.data_path+'/mnist', train=True, download=True, transform=train_transform)
-    dst_unlabeled = datasets.MNIST(args.data_path+'/mnist', train=True, download=True, transform=test_transform)
-    dst_test = datasets.MNIST(args.data_path+'/mnist', train=False, download=True, transform=test_transform)
+    dataset_dir = args.data_path + '/mnist'
+    import os
+    if not os.path.exists(dataset_dir):
+        from src.re_play_it_straight.support.kaggle_utils import download_from_kaggle
+        download_from_kaggle("hojjatk/mnist-dataset", dataset_dir)
+        
+    dst_train = datasets.MNIST(dataset_dir, train=True, download=True, transform=train_transform)
+    dst_unlabeled = datasets.MNIST(dataset_dir, train=True, download=True, transform=test_transform)
+    dst_test = datasets.MNIST(dataset_dir, train=False, download=True, transform=test_transform)
 
     #dst_train = datasets_.MNIST(data_path, train=True, download=True, transform=transform)
     #dst_test = datasets_.MNIST(data_path, train=False, download=True, transform=transform)

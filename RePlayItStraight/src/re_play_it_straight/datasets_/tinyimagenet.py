@@ -1,23 +1,15 @@
 from torchvision import datasets, transforms
 import os
-import requests
-import zipfile
+from src.re_play_it_straight.support.kaggle_utils import download_from_kaggle
 
 
 def TinyImageNet(args, downsize=False):
     data_path = args.data_path
-    if not os.path.exists(os.path.join(data_path, "tiny-imagenet-200")):
-        url = "http://cs231n.stanford.edu/tiny-imagenet-200.zip"  # 248MB
-        print("Downloading Tiny-ImageNet")
-        r = requests.get(url, stream=True)
-        with open(os.path.join(data_path, "tiny-imagenet-200.zip"), "wb") as f:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk:
-                    f.write(chunk)
-
-        print("Unziping Tiny-ImageNet")
-        with zipfile.ZipFile(os.path.join(data_path, "tiny-imagenet-200.zip")) as zf:
-            zf.extractall(path=data_path)
+    dataset_dir = os.path.join(data_path, "tiny-imagenet-200")
+    
+    if not os.path.exists(dataset_dir):
+        # We download from Kaggle instead of the slow Stanford server
+        download_from_kaggle("akash2sharma/tiny-imagenet", dataset_dir)
 
     channel = 3
     im_size = (32, 32) if downsize else (64, 64)
