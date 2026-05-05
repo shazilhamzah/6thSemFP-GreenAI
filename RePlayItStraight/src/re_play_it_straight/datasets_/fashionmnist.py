@@ -7,7 +7,10 @@ def FashionMNIST(args):
     data_path = args.data_path
     dataset_dir = os.path.join(data_path, 'fashionmnist')
     if not os.path.exists(dataset_dir):
-        download_from_kaggle("zalando-research/fashionmnist", dataset_dir)
+        try:
+            download_from_kaggle("zalando-research/fashionmnist", dataset_dir)
+        except Exception as e:
+            print(f"[!] Kaggle download for FashionMNIST failed ({e}). Falling back to torchvision...")
 
     channel = 1
     im_size = (28, 28)

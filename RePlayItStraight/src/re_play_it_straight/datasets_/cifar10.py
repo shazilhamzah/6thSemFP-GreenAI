@@ -16,8 +16,11 @@ def CIFAR10(args):
     
     dataset_dir = args.data_path + '/cifar10'
     if not os.path.exists(dataset_dir):
-        from src.re_play_it_straight.support.kaggle_utils import download_from_kaggle
-        download_from_kaggle("fedesoriano/cifar10-python", dataset_dir)
+        try:
+            from src.re_play_it_straight.support.kaggle_utils import download_from_kaggle
+            download_from_kaggle("fedesoriano/cifar10-python", dataset_dir)
+        except Exception as e:
+            print(f"[!] Kaggle download for CIFAR10 failed ({e}). Falling back to torchvision...")
         # torchvision expects a specific subfolder structure if it's already there
         # We might need to move things around if kaggle structure differs
     

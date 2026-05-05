@@ -18,8 +18,11 @@ def CIFAR100(args):
     
     dataset_dir = args.data_path + '/cifar100'
     if not os.path.exists(dataset_dir):
-        from src.re_play_it_straight.support.kaggle_utils import download_from_kaggle
-        download_from_kaggle("fedesoriano/cifar100-python", dataset_dir)
+        try:
+            from src.re_play_it_straight.support.kaggle_utils import download_from_kaggle
+            download_from_kaggle("fedesoriano/cifar100-python", dataset_dir)
+        except Exception as e:
+            print(f"[!] Kaggle download for CIFAR100 failed ({e}). Falling back to torchvision...")
         
     dst_train = datasets.CIFAR100(dataset_dir, train=True, download=True, transform=train_transform)
     dst_unlabeled = datasets.CIFAR100(dataset_dir, train=True, download=True, transform=test_transform)

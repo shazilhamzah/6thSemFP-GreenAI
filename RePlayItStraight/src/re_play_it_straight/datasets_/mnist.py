@@ -25,8 +25,11 @@ def MNIST(args, permuted=False, permutation_seed=None):
     dataset_dir = args.data_path + '/mnist'
     import os
     if not os.path.exists(dataset_dir):
-        from src.re_play_it_straight.support.kaggle_utils import download_from_kaggle
-        download_from_kaggle("hojjatk/mnist-dataset", dataset_dir)
+        try:
+            from src.re_play_it_straight.support.kaggle_utils import download_from_kaggle
+            download_from_kaggle("hojjatk/mnist-dataset", dataset_dir)
+        except Exception as e:
+            print(f"[!] Kaggle download for MNIST failed ({e}). Falling back to torchvision...")
         
     dst_train = datasets.MNIST(dataset_dir, train=True, download=True, transform=train_transform)
     dst_unlabeled = datasets.MNIST(dataset_dir, train=True, download=True, transform=test_transform)

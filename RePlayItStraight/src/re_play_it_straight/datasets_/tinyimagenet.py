@@ -8,8 +8,31 @@ def TinyImageNet(args, downsize=False):
     dataset_dir = os.path.join(data_path, "tiny-imagenet-200")
     
     if not os.path.exists(dataset_dir):
-        # We download from Kaggle instead of the slow Stanford server
-        download_from_kaggle("akash2sharma/tiny-imagenet", dataset_dir)
+        try:
+            # Try Kaggle first (Fast)
+            download_from_kaggle("akash2sharma/tiny-imagenet", dataset_dir)
+        except Exception as e:
+            print(f"[!] Kaggle download failed ({e}). Falling back to slow Stanford server...")
+            url = "http://cs231n.stanford.edu/tiny-imagenet-200.zip"
+            import requests
+            import zipfile
+            
+            os.makedirs(data_path, exist_ok=True)
+            zip_path = os.path.join(data_path, "tiny-imagenet-200.zip")
+            
+            print("Downloading Tiny-ImageNet from Stanford...")
+            r = requests.get(url, stream=True)
+            with open(zip_path, "wb") as f:
+                for chunk in r.iter_content(chunk_size=1024):
+                    if chunk:
+                        f.write(chunk)
+
+            print("Unzipping Tiny-ImageNet...")
+            with zipfile.ZipFile(zip_path) as zf:
+                zf.extractall(path=data_path)
+            
+            # Remove zip after extraction to save space
+            os.remove(zip_path)
 
     channel = 3
     im_size = (32, 32) if downsize else (64, 64)
