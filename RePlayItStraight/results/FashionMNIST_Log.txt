@@ -1,0 +1,122 @@
+args:  Namespace(n_split=3, boot_epochs=20, target_accuracy=90, discount_rs2=2.0, boost_threshold=0.07, dataset='FashionMNIST', n_class=10, cycle=10, n_query=1000, subset=1000000, resolution=32, model='ResNet18', epochs=10, data_path='./data', gpu=[0], print_freq=300, seed=42, workers=0, optimizer='SGD', lr=0.1, min_lr=0.0001, momentum=0.9, weight_decay=0.0005, nesterov=True, scheduler='CosineAnnealingLR', gamma=0.5, step_size=50, batch_size=128, test_batch_size=500, test_interval=1, test_fraction=1.0, balance=False, method='ImprovedUncertainty', submodular='GraphCut', submodular_greedy='LazyGreedy', uncertainty='LeastConfidence', save_path='./RePlayItStraight/results', resume='', device='cuda:0')
+
+  0%|          | 0.00/26.4M [00:00<?, ?B/s]
+  0%|          | 32.8k/26.4M [00:00<01:50, 238kB/s]
+  0%|          | 65.5k/26.4M [00:00<01:51, 237kB/s]
+  0%|          | 98.3k/26.4M [00:00<01:51, 237kB/s]
+  1%|          | 229k/26.4M [00:00<00:50, 517kB/s] 
+  2%|▏         | 459k/26.4M [00:00<00:27, 928kB/s]
+  3%|▎         | 918k/26.4M [00:00<00:14, 1.74MB/s]
+  7%|▋         | 1.84M/26.4M [00:00<00:07, 3.33MB/s]
+ 14%|█▍        | 3.67M/26.4M [00:01<00:03, 6.49MB/s]
+ 25%|██▍       | 6.59M/26.4M [00:01<00:01, 10.9MB/s]
+ 29%|██▉       | 7.67M/26.4M [00:01<00:01, 10.0MB/s]
+ 39%|███▉      | 10.4M/26.4M [00:01<00:01, 13.7MB/s]
+ 55%|█████▍    | 14.5M/26.4M [00:01<00:00, 17.7MB/s]
+ 70%|███████   | 18.6M/26.4M [00:01<00:00, 21.1MB/s]
+ 86%|████████▌ | 22.6M/26.4M [00:01<00:00, 23.4MB/s]
+100%|██████████| 26.4M/26.4M [00:01<00:00, 13.3MB/s]
+
+  0%|          | 0.00/29.5k [00:00<?, ?B/s]
+100%|██████████| 29.5k/29.5k [00:00<00:00, 212kB/s]
+100%|██████████| 29.5k/29.5k [00:00<00:00, 212kB/s]
+
+  0%|          | 0.00/4.42M [00:00<?, ?B/s]
+  1%|          | 32.8k/4.42M [00:00<00:18, 237kB/s]
+  1%|▏         | 65.5k/4.42M [00:00<00:18, 237kB/s]
+  2%|▏         | 98.3k/4.42M [00:00<00:18, 236kB/s]
+  4%|▍         | 197k/4.42M [00:00<00:09, 423kB/s] 
+ 10%|▉         | 426k/4.42M [00:00<00:04, 867kB/s]
+ 19%|█▉        | 852k/4.42M [00:00<00:02, 1.61MB/s]
+ 39%|███▊      | 1.70M/4.42M [00:00<00:00, 3.09MB/s]
+ 76%|███████▋  | 3.38M/4.42M [00:01<00:00, 5.94MB/s]
+100%|██████████| 4.42M/4.42M [00:01<00:00, 3.98MB/s]
+
+  0%|          | 0.00/5.15k [00:00<?, ?B/s]
+100%|██████████| 5.15k/5.15k [00:00<00:00, 34.3MB/s]
+im_size:  torch.Size([1, 28, 28])
+| Training on model ResNet18
+MACs:                           457.2 MMac
+Number of parameters:           11.17 M 
+==================== RS2 boot training ====================
+RS2 split size: 20000
+Discount RS2: 2.0
+lr: 0.1, momentum: 0.9, decay: 0.0005
+performing RS2 boot epoch n.1/20
+performing RS2 boot epoch n.2/20
+performing RS2 boot epoch n.3/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.4/20
+performing RS2 boot epoch n.5/20
+performing RS2 boot epoch n.6/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.7/20
+performing RS2 boot epoch n.8/20
+performing RS2 boot epoch n.9/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.10/20
+[95mTest | Accuracy: 88.683, Precision: 0.887, Recall: 0.887, F1: 0.886[0m
+[95mboot epoch 10/20 | Accuracy: 88.68333498636882, Precision: 0.8865844125434726, Recall: 0.8868333333333334, F1: 0.8857497162070512[0m
+performing RS2 boot epoch n.11/20
+performing RS2 boot epoch n.12/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.13/20
+performing RS2 boot epoch n.14/20
+performing RS2 boot epoch n.15/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.16/20
+performing RS2 boot epoch n.17/20
+performing RS2 boot epoch n.18/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.19/20
+performing RS2 boot epoch n.20/20
+[95mTest | Accuracy: 88.333, Precision: 0.893, Recall: 0.883, F1: 0.884[0m
+[95mboot epoch 20/20 | Accuracy: 88.3333346048991, Precision: 0.8932792218239606, Recall: 0.8833333333333333, F1: 0.8840454689582996[0m
+performing RS2 boot epoch n.21/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+[95mTest | Accuracy: 86.875, Precision: 0.878, Recall: 0.869, F1: 0.868[0m
+[95mBoot completed | Accuracy: 86.8750015894572, Precision: 0.8781873547452645, Recall: 0.86875, F1: 0.8678974765413496[0m
+Accuracies:
+[88.68333498636882, 88.3333346048991]
+Precisions:
+[np.float64(0.8865844125434726), np.float64(0.8932792218239606)]
+Recalls:
+[np.float64(0.8868333333333334), np.float64(0.8833333333333333)]
+F1s:
+[np.float64(0.8857497162070512), np.float64(0.8840454689582996)]
+=> Saving checkpoint for epoch 20, with Prec@1 86.875002.
+====================Cycle: 1====================
+==========Start Querying==========
+Traceback (most recent call last):
+  File "/content/6thSemFP-GreenAI/./RePlayItStraight/src/re_play_it_straight/main_re_play_it_straight.py", line 170, in <module>
+    Q_indices, Q_scores = ALmethod.select()
+                          ^^^^^^^^^^^^^^^^^
+  File "/content/6thSemFP-GreenAI/RePlayItStraight/src/re_play_it_straight/methods/improved_uncertainty.py", line 129, in select
+    selected_indices, scores = self.run()
+                               ^^^^^^^^^^
+  File "/content/6thSemFP-GreenAI/RePlayItStraight/src/re_play_it_straight/methods/improved_uncertainty.py", line 36, in run
+    scores = self.rank_uncertainty()
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/content/6thSemFP-GreenAI/RePlayItStraight/src/re_play_it_straight/methods/improved_uncertainty.py", line 95, in rank_uncertainty
+    for i, (input, output) in enumerate(train_loader):
+                              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py", line 741, in __next__
+    data = self._next_data()
+           ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataloader.py", line 801, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/utils/data/_utils/fetch.py", line 52, in fetch
+    data = self.dataset.__getitems__(possibly_batched_index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/utils/data/dataset.py", line 413, in __getitems__
+    return [self.dataset[self.indices[idx]] for idx in indices]
+            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable

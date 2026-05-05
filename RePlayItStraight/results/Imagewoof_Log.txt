@@ -1,0 +1,156 @@
+args:  Namespace(n_split=3, boot_epochs=20, target_accuracy=90, discount_rs2=2.0, boost_threshold=0.07, dataset='Imagewoof', n_class=10, cycle=10, n_query=1000, subset=1000000, resolution=32, model='ResNet18', epochs=10, data_path='./data', gpu=[0], print_freq=300, seed=42, workers=0, optimizer='SGD', lr=0.1, min_lr=0.0001, momentum=0.9, weight_decay=0.0005, nesterov=True, scheduler='CosineAnnealingLR', gamma=0.5, step_size=50, batch_size=128, test_batch_size=500, test_interval=1, test_fraction=1.0, balance=False, method='ImprovedUncertainty', submodular='GraphCut', submodular_greedy='LazyGreedy', uncertainty='LeastConfidence', save_path='./RePlayItStraight/results', resume='', device='cuda:0')
+Resizing Initial Data into 32x32
+Resizing Initial Data into 32x32
+Resizing Initial Data into 32x32
+im_size:  torch.Size([3, 32, 32])
+| Training on model ResNet18
+MACs:                           557.22 MMac
+Number of parameters:           11.17 M 
+==================== RS2 boot training ====================
+RS2 split size: 3008
+Discount RS2: 2.0
+lr: 0.1, momentum: 0.9, decay: 0.0005
+performing RS2 boot epoch n.1/20
+performing RS2 boot epoch n.2/20
+performing RS2 boot epoch n.3/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.4/20
+performing RS2 boot epoch n.5/20
+performing RS2 boot epoch n.6/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.7/20
+performing RS2 boot epoch n.8/20
+performing RS2 boot epoch n.9/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.10/20
+[95mTest | Accuracy: 21.163, Precision: 0.182, Recall: 0.212, F1: 0.167[0m
+[95mboot epoch 10/20 | Accuracy: 21.163435500084198, Precision: 0.1824065237818695, Recall: 0.2116343490304709, F1: 0.16702411899056122[0m
+performing RS2 boot epoch n.11/20
+performing RS2 boot epoch n.12/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.13/20
+performing RS2 boot epoch n.14/20
+performing RS2 boot epoch n.15/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.16/20
+performing RS2 boot epoch n.17/20
+performing RS2 boot epoch n.18/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.19/20
+performing RS2 boot epoch n.20/20
+[95mTest | Accuracy: 22.271, Precision: 0.224, Recall: 0.223, F1: 0.203[0m
+[95mboot epoch 20/20 | Accuracy: 22.271468741081428, Precision: 0.22390875542166666, Recall: 0.2227146814404432, F1: 0.20267292908924603[0m
+performing RS2 boot epoch n.21/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+[95mTest | Accuracy: 21.496, Precision: 0.220, Recall: 0.215, F1: 0.196[0m
+[95mBoot completed | Accuracy: 21.49584488591329, Precision: 0.21976771404484727, Recall: 0.2149584487534626, F1: 0.19641574659526279[0m
+Accuracies:
+[21.163435500084198, 22.271468741081428]
+Precisions:
+[np.float64(0.1824065237818695), np.float64(0.22390875542166666)]
+Recalls:
+[np.float64(0.2116343490304709), np.float64(0.2227146814404432)]
+F1s:
+[np.float64(0.16702411899056122), np.float64(0.20267292908924603)]
+=> Saving checkpoint for epoch 20, with Prec@1 21.495845.
+====================Cycle: 1====================
+==========Start Querying==========
+| Selecting for batch [  1/ 19]
+[32mRun: # of Labeled: 0, # of new Labeled: 1000, # of Unlabeled: 8025[0m
+==========Start Training==========
+[94mPerforming standard run...[0m
+lr: 0.1, momentum: 0.9, decay: 0.0005
+[95mTest | Accuracy: 18.947, Precision: 0.195, Recall: 0.189, F1: 0.160[0m
+[95mCycle 1 || Label set size 1000 | Accuracy: 18.947368748630513, Precision: 0.19477900128920952, Recall: 0.18947368421052632, F1: 0.15950322918320547[0m
+[95mDone 332 backward steps to reach 18.947368748630513 of accuracy![0m
+====================Cycle: 2====================
+==========Start Querying==========
+| Selecting for batch [  1/ 17]
+[32mRun: # of Labeled: 1000, # of new Labeled: 1000, # of Unlabeled: 7025[0m
+==========Start Training==========
+[94mPerforming standard run...[0m
+lr: 0.1, momentum: 0.9, decay: 0.0005
+[95mTest | Accuracy: 26.150, Precision: 0.286, Recall: 0.261, F1: 0.246[0m
+=> Saving checkpoint for epoch 2, with Prec@1 26.149584.
+[95mCycle 2 || Label set size 2000 | Accuracy: 26.14958425506, Precision: 0.2857234417188141, Recall: 0.2614958448753463, F1: 0.24556420380351962[0m
+[95mDone 492 backward steps to reach 26.14958425506 of accuracy![0m
+====================Cycle: 3====================
+==========Start Querying==========
+| Selecting for batch [  1/ 15]
+[32mRun: # of Labeled: 2000, # of new Labeled: 1000, # of Unlabeled: 6025[0m
+==========Start Training==========
+[94mPerforming standard run...[0m
+lr: 0.1, momentum: 0.9, decay: 0.0005
+[95mTest | Accuracy: 34.515, Precision: 0.361, Recall: 0.345, F1: 0.339[0m
+=> Saving checkpoint for epoch 3, with Prec@1 34.515236.
+[95mCycle 3 || Label set size 3000 | Accuracy: 34.51523593257999, Precision: 0.3605211055480066, Recall: 0.34515235457063714, F1: 0.3394433157919729[0m
+[95mDone 732 backward steps to reach 34.51523593257999 of accuracy![0m
+====================Cycle: 4====================
+==========Start Querying==========
+| Selecting for batch [  1/ 13]
+[32mRun: # of Labeled: 3000, # of new Labeled: 1000, # of Unlabeled: 5025[0m
+==========Start Training==========
+[94mPerforming standard run...[0m
+lr: 0.1, momentum: 0.9, decay: 0.0005
+[95mTest | Accuracy: 42.548, Precision: 0.442, Recall: 0.425, F1: 0.423[0m
+=> Saving checkpoint for epoch 4, with Prec@1 42.548477.
+[95mCycle 4 || Label set size 4000 | Accuracy: 42.548477320789964, Precision: 0.44167036642329377, Recall: 0.42548476454293627, F1: 0.4232882059311043[0m
+[95mDone 1052 backward steps to reach 42.548477320789964 of accuracy![0m
+====================Cycle: 5====================
+==========Start Querying==========
+| Selecting for batch [  1/ 11]
+[32mRun: # of Labeled: 4000, # of new Labeled: 1000, # of Unlabeled: 4025[0m
+==========Start Training==========
+[94mPerforming standard run...[0m
+lr: 0.1, momentum: 0.9, decay: 0.0005
+[95mTest | Accuracy: 49.086, Precision: 0.497, Recall: 0.491, F1: 0.489[0m
+=> Saving checkpoint for epoch 5, with Prec@1 49.085873.
+[95mCycle 5 || Label set size 5000 | Accuracy: 49.08587327360116, Precision: 0.49684709808410615, Recall: 0.49085872576177286, F1: 0.4888788944729572[0m
+[95mDone 1452 backward steps to reach 49.08587327360116 of accuracy![0m
+====================Cycle: 6====================
+==========Start Querying==========
+| Selecting for batch [  1/  9]
+[32mRun: # of Labeled: 5000, # of new Labeled: 1000, # of Unlabeled: 3025[0m
+==========Start Training==========
+[94mPerforming standard run...[0m
+lr: 0.1, momentum: 0.9, decay: 0.0005
+[95mTest | Accuracy: 60.388, Precision: 0.605, Recall: 0.604, F1: 0.602[0m
+=> Saving checkpoint for epoch 6, with Prec@1 60.387812.
+[95mCycle 6 || Label set size 6000 | Accuracy: 60.387811856256626, Precision: 0.6048969353054089, Recall: 0.6038781163434903, F1: 0.6021828953683459[0m
+[95mDone 1922 backward steps to reach 60.387811856256626 of accuracy![0m
+====================Cycle: 7====================
+==========Start Querying==========
+| Selecting for batch [  1/  7]
+[32mRun: # of Labeled: 6000, # of new Labeled: 1000, # of Unlabeled: 2025[0m
+==========Start Training==========
+[94mPerforming standard run...[0m
+lr: 0.1, momentum: 0.9, decay: 0.0005
+[95mTest | Accuracy: 71.634, Precision: 0.720, Recall: 0.716, F1: 0.716[0m
+=> Saving checkpoint for epoch 7, with Prec@1 71.634350.
+[95mCycle 7 || Label set size 7000 | Accuracy: 71.63434953768828, Precision: 0.7199274728767935, Recall: 0.7163434903047091, F1: 0.7161299366272942[0m
+[95mDone 2472 backward steps to reach 71.63434953768828 of accuracy![0m
+====================Cycle: 8====================
+==========Start Querying==========
+| Selecting for batch [  1/  5]
+[32mRun: # of Labeled: 7000, # of new Labeled: 1000, # of Unlabeled: 1025[0m
+==========Start Training==========
+[94mPerforming standard run...[0m
+lr: 0.1, momentum: 0.9, decay: 0.0005
+[95mTest | Accuracy: 81.607, Precision: 0.817, Recall: 0.816, F1: 0.816[0m
+=> Saving checkpoint for epoch 8, with Prec@1 81.606649.
+[95mCycle 8 || Label set size 8000 | Accuracy: 81.60664904480826, Precision: 0.8169085974789757, Recall: 0.8160664819944599, F1: 0.8155127123695979[0m
+[95mDone 3102 backward steps to reach 81.60664904480826 of accuracy![0m
+====================Cycle: 9====================
+==========Start Querying==========
+| Selecting for batch [  1/  3]
+[32mRun: # of Labeled: 8000, # of new Labeled: 1000, # of Unlabeled: 25[0m
+==========Start Training==========
+[94mPerforming standard run...[0m
+lr: 0.1, momentum: 0.9, decay: 0.0005

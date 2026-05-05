@@ -1,0 +1,24 @@
+args:  Namespace(n_split=3, boot_epochs=20, target_accuracy=90, discount_rs2=2.0, boost_threshold=0.07, dataset='ImageNet30', n_class=30, cycle=10, n_query=1000, subset=1000000, resolution=32, model='ResNet18', epochs=10, data_path='./data', gpu=[0], print_freq=300, seed=42, workers=0, optimizer='SGD', lr=0.1, min_lr=0.0001, momentum=0.9, weight_decay=0.0005, nesterov=True, scheduler='CosineAnnealingLR', gamma=0.5, step_size=50, batch_size=128, test_batch_size=500, test_interval=1, test_fraction=1.0, balance=False, method='ImprovedUncertainty', submodular='GraphCut', submodular_greedy='LazyGreedy', uncertainty='LeastConfidence', save_path='./RePlayItStraight/results', resume='', device='cuda:0')
+Resizing Initial Data into 32x32
+Traceback (most recent call last):
+  File "/content/6thSemFP-GreenAI/./RePlayItStraight/src/re_play_it_straight/main_re_play_it_straight.py", line 82, in <module>
+    channel, im_size, num_classes, class_names, mean, std, dst_train, dst_u_all, dst_test = datasets_.__dict__[args.dataset](args)
+                                                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/content/6thSemFP-GreenAI/RePlayItStraight/src/re_play_it_straight/datasets_/imagenet30.py", line 123, in ImageNet30
+    dst_train = MyImageNet30(args.data_path+'/imgnet30/one_class_train/', transform=train_transform, resolution=args.resolution)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/content/6thSemFP-GreenAI/RePlayItStraight/src/re_play_it_straight/datasets_/imagenet30.py", line 17, in __init__
+    self.data = ImageFolder(file_path, transform_resize)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torchvision/datasets/folder.py", line 328, in __init__
+    super().__init__(
+  File "/usr/local/lib/python3.12/dist-packages/torchvision/datasets/folder.py", line 149, in __init__
+    classes, class_to_idx = self.find_classes(self.root)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torchvision/datasets/folder.py", line 234, in find_classes
+    return find_classes(directory)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torchvision/datasets/folder.py", line 41, in find_classes
+    classes = sorted(entry.name for entry in os.scandir(directory) if entry.is_dir())
+                                             ^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: './data/imgnet30/one_class_train/'
