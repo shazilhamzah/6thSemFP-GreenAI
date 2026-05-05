@@ -13,8 +13,8 @@ def download_all():
         os.makedirs(data_path)
         
     datasets = {
-        "CIFAR10": {"handle": "fedesoriano/cifar10-python", "path": "cifar10"},
-        "CIFAR100": {"handle": "fedesoriano/cifar100-python", "path": "cifar100"},
+        "CIFAR10": {"handle": "pankrzysiu/cifar10-python", "path": "cifar10"},
+        "CIFAR100": {"handle": "fedesoriano/cifar100", "path": "cifar100"},
         "MNIST": {"handle": "hojjatk/mnist-dataset", "path": "mnist"},
         "FashionMNIST": {"handle": "zalando-research/fashionmnist", "path": "fashionmnist"},
         "SVHN": {"handle": "stanfordu/street-view-house-numbers", "path": "svhn"},
