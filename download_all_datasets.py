@@ -34,10 +34,44 @@ def download_all():
             continue
             
         try:
+            print(f"Attempting to download {name} via Kaggle API...")
             download_from_kaggle(info["handle"], target_dir)
             print(f"[OK] {name} download complete.")
         except Exception as e:
-            print(f"[ERROR] Failed to download {name}: {e}")
+            print(f"[!] Kaggle download for {name} failed ({e}). Attempting original server fallback...")
+            
+            # Fallback logic based on dataset name
+            try:
+                import requests
+                if name == "TinyImageNet":
+                    import zipfile
+                    url = "http://cs231n.stanford.edu/tiny-imagenet-200.zip"
+                    zip_path = os.path.join(data_path, "tiny-imagenet-200.zip")
+                    print(f"Downloading from {url}...")
+                    r = requests.get(url, stream=True)
+                    with open(zip_path, "wb") as f: f.write(r.content)
+                    with zipfile.ZipFile(zip_path) as zf: zf.extractall(path=data_path)
+                    os.remove(zip_path)
+                    print(f"[OK] {name} ready via Stanford.")
+                elif name in ["Imagenette", "Imagewoof"]:
+                    import tarfile
+                    slug = "imagenette2-320" if name == "Imagenette" else "imagewoof2-320"
+                    url = f"https://s3.amazonaws.com/fast-ai-imageclas/{slug}.tgz"
+                    tgz_path = os.path.join(data_path, f"{slug}.tgz")
+                    print(f"Downloading from {url}...")
+                    r = requests.get(url, stream=True)
+                    with open(tgz_path, "wb") as f: f.write(r.content)
+                    with tarfile.open(tgz_path, "r:gz") as tar: tar.extractall(path=data_path)
+                    if os.path.exists(target_dir):
+                        import shutil
+                        shutil.rmtree(target_dir)
+                    os.rename(os.path.join(data_path, slug), target_dir)
+                    os.remove(tgz_path)
+                    print(f"[OK] {name} ready via Fast.ai.")
+                else:
+                    print(f"No automated fallback for {name}. It may still download via torchvision during training.")
+            except Exception as fe:
+                print(f"[ERROR] Fallback failed for {name}: {fe}")
             
     print("\n" + "=" * 50)
     print("All datasets processed!")

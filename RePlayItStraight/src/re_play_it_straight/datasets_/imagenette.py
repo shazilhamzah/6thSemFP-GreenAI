@@ -56,7 +56,39 @@ def Imagenette(args):
 
     dataset_dir = os.path.join(args.data_path, 'Imagenette')
     if not os.path.exists(dataset_dir):
-        download_from_kaggle("frabbisw/imagenette", dataset_dir)
+        try:
+            # Try Kaggle first
+            download_from_kaggle("frabbisw/imagenette", dataset_dir)
+        except Exception as e:
+            print(f"[!] Kaggle download for Imagenette failed ({e}). Falling back to Fast.ai servers...")
+            import requests
+            import tarfile
+            
+            # Use the 320px version as a reliable fallback
+            url = "https://s3.amazonaws.com/fast-ai-imageclas/imagenette2-320.tgz"
+            os.makedirs(args.data_path, exist_ok=True)
+            tgz_path = os.path.join(args.data_path, "imagenette2-320.tgz")
+            
+            print("Downloading Imagenette from Fast.ai...")
+            r = requests.get(url, stream=True)
+            with open(tgz_path, "wb") as f:
+                for chunk in r.iter_content(chunk_size=1024):
+                    if chunk:
+                        f.write(chunk)
+
+            print("Extracting Imagenette...")
+            with tarfile.open(tgz_path, "r:gz") as tar:
+                tar.extractall(path=args.data_path)
+            
+            # Rename the extracted folder to match expected structure
+            extracted_path = os.path.join(args.data_path, "imagenette2-320")
+            if os.path.exists(extracted_path):
+                if os.path.exists(dataset_dir):
+                    import shutil
+                    shutil.rmtree(dataset_dir)
+                os.rename(extracted_path, dataset_dir)
+                
+            os.remove(tgz_path)
 
     dst_train = ImagenetteDataset(dataset_dir + '/train/', transform=train_transform, resolution=args.resolution)
     dst_unlabeled = ImagenetteDataset(dataset_dir + '/train/', transform=test_transform, resolution=args.resolution)
