@@ -44,7 +44,7 @@ for ds in datasets:
     cmd = [
         "python", "-u", "./RePlayItStraight/src/re_play_it_straight/main_re_play_it_straight.py",
         "--gpu", "0",
-        "--data_path", "../data",
+        "--data_path", "./data",
         "--dataset", ds_name,
         "--n-class", str(ds_classes),
         "--model", "ResNet18",

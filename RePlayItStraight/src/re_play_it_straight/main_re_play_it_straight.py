@@ -14,7 +14,6 @@ from src.re_play_it_straight.support.rs2 import split_dataset_for_rs2, rs2_split
 from src.re_play_it_straight.support.utils import *
 from src.re_play_it_straight.support.arguments import parser
 from ptflops import get_model_complexity_info
-import csv
 
 
 def rs2_training(dst_train, args, network, train_loader, test_loader, boot_epochs, n_split, type="boot", check_accuracy=False):
@@ -59,7 +58,7 @@ def rs2_training(dst_train, args, network, train_loader, test_loader, boot_epoch
     print("F1s:")
     print(f1s)
 
-    return accuracy, precision, recall, f1, tot_backward_steps, accs, precs, recs, f1s
+    return accuracy, precision, recall, f1, tot_backward_steps
 
 
 if __name__ == "__main__":
@@ -134,42 +133,8 @@ if __name__ == "__main__":
     # RS2 boot training
     print("==================== RS2 boot training ====================")
     print("RS2 split size: {}".format(int(len(dst_train) / args.n_split)))
-    best_accuracy, precision, recall, f1, steps, boot_accs, boot_precs, boot_recs, boot_f1s = rs2_training(dst_train, args, network, train_loader, validation_loader, args.boot_epochs, args.n_split)
+    best_accuracy, precision, recall, f1, steps = rs2_training(dst_train, args, network, train_loader, validation_loader, args.boot_epochs, args.n_split)
     tot_backward_steps += steps
-
-    # Initialize CSV logging data
-    cycle_csv_data = []
-    epoch_csv_data = []
-
-    # Record boot training stats (if we want epoch-level granularity for boot)
-    # rs2_training logs every 10 epochs, we can add those to epoch_csv_data
-    for i, acc in enumerate(boot_accs):
-        epoch_csv_data.append({
-            'phase': 'boot',
-            'cycle': 0,
-            'epoch': (i + 1) * 10,
-            'accuracy': acc,
-            'precision': boot_precs[i],
-            'recall': boot_recs[i],
-            'f1': boot_f1s[i],
-            'backward_steps': (steps // len(boot_accs)) * (i + 1) # Approximation
-        })
-
-    # Record initial cycle state
-    test_acc_boot, test_prec_boot, test_rec_boot, test_f1_boot = test(evaluation_loader, network, criterion, 0, args, None)
-    cycle_csv_data.append({
-        'cycle': 0,
-        'labeled_samples': 0, # Initial state
-        'val_accuracy': best_accuracy,
-        'val_precision': precision,
-        'val_recall': recall,
-        'val_f1': f1,
-        'test_accuracy': test_acc_boot,
-        'test_precision': test_prec_boot,
-        'test_recall': test_rec_boot,
-        'test_f1': test_f1_boot,
-        'cumulative_backward_steps': tot_backward_steps
-    })
 
     # Save initial best model after boot
     if args.save_path:
@@ -251,17 +216,6 @@ if __name__ == "__main__":
 
                 current_loss, backward_steps = train(train_loader, network, criterion, optimizer, scheduler, epoch, args, rec, if_weighted=False)
                 tot_backward_steps += backward_steps
-                
-                # Record epoch stats
-                epoch_csv_data.append({
-                    'phase': 'training',
-                    'cycle': cycle,
-                    'epoch': epoch,
-                    'loss': current_loss,
-                    'accuracy': rec.train_acc[-1] if rec.train_acc else None,
-                    'lr': optimizer.param_groups[0]['lr'],
-                    'backward_steps': tot_backward_steps
-                })
 
         else:
             clprint("Performing standard run...", Reason.INFO_TRAINING)
@@ -278,16 +232,6 @@ if __name__ == "__main__":
                 _, backward_steps = train(train_loader, network, criterion, optimizer, scheduler, epoch, args, rec, if_weighted=False)
                 tot_backward_steps += backward_steps
 
-                # Record epoch stats
-                epoch_csv_data.append({
-                    'phase': 'training',
-                    'cycle': cycle,
-                    'epoch': epoch,
-                    'accuracy': rec.train_acc[-1] if rec.train_acc else None,
-                    'lr': optimizer.param_groups[0]['lr'],
-                    'backward_steps': tot_backward_steps
-                })
-
         labeled_set += new_labeled_set
         new_labeled_set = []
         # Performing RS2 training on the whole datasets_ if it is slowing training
@@ -301,29 +245,13 @@ if __name__ == "__main__":
             clprint(f"Performing n {n_rs2_refresh} boost epoch...", reason=Reason.INFO_TRAINING)
             bkp_lr = args.lr
             args.lr = args.lr * 0.1
-            accuracy, precision, recall, f1, steps, b_accs, b_precs, b_recs, b_f1s = rs2_training(dst_train, args, network, train_loader, validation_loader, 10, 10, "boost", check_accuracy=True)
+            accuracy, precision, recall, f1, steps = rs2_training(dst_train, args, network, train_loader, validation_loader, 10, 10, "boost", check_accuracy=True)
             args.lr = bkp_lr
             tot_backward_steps += steps
             n_rs2_refresh += 1
 
-            # Record boost epoch stats
-            for i, acc in enumerate(b_accs):
-                epoch_csv_data.append({
-                    'phase': f'boost_{n_rs2_refresh}',
-                    'cycle': cycle,
-                    'epoch': i,
-                    'accuracy': acc,
-                    'precision': b_precs[i],
-                    'recall': b_recs[i],
-                    'f1': b_f1s[i],
-                    'backward_steps': tot_backward_steps
-                })
-
         else:
             accuracy, precision, recall, f1 = test(validation_loader, network, criterion, epoch, args, rec)
-
-        # Test on evaluation set for logging
-        test_acc, test_prec, test_rec, test_f1 = test(evaluation_loader, network, criterion, epoch, args, rec)
 
         # Check and save best model
         if accuracy > best_accuracy:
@@ -343,21 +271,6 @@ if __name__ == "__main__":
         logs_precision.append([precision])
         logs_recall.append([recall])
         logs_f1.append([f1])
-
-        # Record cycle stats
-        cycle_csv_data.append({
-            'cycle': cycle,
-            'labeled_samples': len(labeled_set),
-            'val_accuracy': accuracy,
-            'val_precision': precision,
-            'val_recall': recall,
-            'val_f1': f1,
-            'test_accuracy': test_acc,
-            'test_precision': test_prec,
-            'test_recall': test_rec,
-            'test_f1': test_f1,
-            'cumulative_backward_steps': tot_backward_steps
-        })
 
     print("========== Pre-Final logs ==========")
     print("-" * 100)
@@ -389,27 +302,6 @@ if __name__ == "__main__":
     clprint(recall, Reason.OUTPUT_TRAINING)
     clprint("F1:", Reason.OUTPUT_TRAINING)
     clprint(f1, Reason.OUTPUT_TRAINING)
-    clprint(f1, Reason.OUTPUT_TRAINING)
-
-    # --- SAVE CSV LOGS ---
-    if args.save_path:
-        cycle_file = os.path.join(args.save_path, f"{args.dataset}_cycle_log.csv")
-        epoch_file = os.path.join(args.save_path, f"{args.dataset}_epoch_log.csv")
-        
-        with open(cycle_file, 'w', newline='') as f:
-            if cycle_csv_data:
-                writer = csv.DictWriter(f, fieldnames=cycle_csv_data[0].keys())
-                writer.writeheader()
-                writer.writerows(cycle_csv_data)
-        
-        with open(epoch_file, 'w', newline='') as f:
-            if epoch_csv_data:
-                writer = csv.DictWriter(f, fieldnames=epoch_csv_data[0].keys())
-                writer.writeheader()
-                writer.writerows(epoch_csv_data)
-        
-        print(f"Cycle logs saved to {cycle_file}")
-        print(f"Epoch logs saved to {epoch_file}")
 
     # --- PAPER CORRECTION: CodeCarbon Energy Tracking Stop ---
     if tracker is not None:
