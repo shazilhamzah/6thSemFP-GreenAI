@@ -39,7 +39,7 @@ foreach ($ds in $datasets) {
     Write-Host "========================================================="
 
     # The python -u and Tee-Object pipeline ensures you see it on screen AND saves to the text file
-    python -u .\RePlayItStraight\src\re_play_it_straight\main_re_play_it_straight.py --gpu 0 --data_path "..\data" --dataset $ds_name --n-class $ds_classes --model ResNet18 --method ImprovedUncertainty --uncertainty LeastConfidence --n-query 1000 --epochs 10 --batch-size 128 --n_split 3 --cycle 10 --boot_epochs 20 --discount_rs2 2 --boost_threshold 0.07 --workers 0 --seed 42 --save_path $results_dir 2>&1 | ForEach-Object { "$_" } | Tee-Object -FilePath $log_file
+    python -u .\RePlayItStraight\src\re_play_it_straight\main_re_play_it_straight.py --gpu 0 --data_path ".\data" --dataset $ds_name --n-class $ds_classes --model ResNet18 --method ImprovedUncertainty --uncertainty LeastConfidence --n-query 1000 --epochs 10 --batch-size 128 --n_split 3 --cycle 10 --boot_epochs 20 --discount_rs2 2 --boost_threshold 0.07 --workers 0 --seed 42 --save_path $results_dir 2>&1 | ForEach-Object { "$_" } | Tee-Object -FilePath $log_file
 }
 
 Write-Host "========================================================="
