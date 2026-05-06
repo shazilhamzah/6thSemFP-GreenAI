@@ -1,4 +1,10 @@
 args:  Namespace(n_split=3, boot_epochs=20, target_accuracy=90, discount_rs2=2.0, boost_threshold=0.07, dataset='Imagewoof', n_class=10, cycle=10, n_query=1000, subset=1000000, resolution=32, model='ResNet18', epochs=10, data_path='./data', gpu=[0], print_freq=300, seed=42, workers=0, optimizer='SGD', lr=0.1, min_lr=0.0001, momentum=0.9, weight_decay=0.0005, nesterov=True, scheduler='CosineAnnealingLR', gamma=0.5, step_size=50, batch_size=128, test_batch_size=500, test_interval=1, test_fraction=1.0, balance=False, method='ImprovedUncertainty', submodular='GraphCut', submodular_greedy='LazyGreedy', uncertainty='LeastConfidence', save_path='./RePlayItStraight/results', resume='', device='cuda:0')
+Downloading frabbisw/imagewoof from Kaggle...
+[!] Kaggle download for Imagewoof failed (403 Client Error.
+
+You don't have permission to access resource at URL: https://api.kaggle.com/v1/datasets.DatasetApiService/GetDataset. Please make sure you are authenticated if you are trying to access a private resource or a resource requiring consent.). Falling back to Fast.ai servers...
+Downloading Imagewoof from Fast.ai...
+Extracting Imagewoof...
 Resizing Initial Data into 32x32
 Resizing Initial Data into 32x32
 Resizing Initial Data into 32x32
@@ -154,3 +160,83 @@ lr: 0.1, momentum: 0.9, decay: 0.0005
 ==========Start Training==========
 [94mPerforming standard run...[0m
 lr: 0.1, momentum: 0.9, decay: 0.0005
+[95mTest | Accuracy: 89.197, Precision: 0.893, Recall: 0.892, F1: 0.892[0m
+=> Saving checkpoint for epoch 9, with Prec@1 89.196676.
+[95mCycle 9 || Label set size 9000 | Accuracy: 89.19667602708135, Precision: 0.8929602876106599, Recall: 0.8919667590027701, F1: 0.8919589725273849[0m
+[95mDone 3812 backward steps to reach 89.19667602708135 of accuracy![0m
+====================Cycle: 10====================
+==========Start Querying==========
+| Selecting for batch [  1/  1]
+[32mRun: # of Labeled: 9000, # of new Labeled: 25, # of Unlabeled: 0[0m
+==========Start Training==========
+[94mPerforming standard run...[0m
+lr: 0.1, momentum: 0.9, decay: 0.0005
+[95mTest | Accuracy: 95.845, Precision: 0.959, Recall: 0.958, F1: 0.958[0m
+=> Saving checkpoint for epoch 10, with Prec@1 95.844874.
+[95mCycle 10 || Label set size 9025 | Accuracy: 95.84487403594886, Precision: 0.9589143766809236, Recall: 0.9584487534626038, F1: 0.9584684813102343[0m
+[95mDone 4522 backward steps to reach 95.84487403594886 of accuracy![0m
+========== Pre-Final logs ==========
+----------------------------------------------------------------------------------------------------
+Backward steps:
+4522
+Accuracies:
+[[18.94736875]
+ [26.14958426]
+ [34.51523593]
+ [42.54847732]
+ [49.08587327]
+ [60.38781186]
+ [71.63434954]
+ [81.60664904]
+ [89.19667603]
+ [95.84487404]]
+Precisions:
+[[0.194779  ]
+ [0.28572344]
+ [0.36052111]
+ [0.44167037]
+ [0.4968471 ]
+ [0.60489694]
+ [0.71992747]
+ [0.8169086 ]
+ [0.89296029]
+ [0.95891438]]
+Recalls:
+[[0.18947368]
+ [0.26149584]
+ [0.34515235]
+ [0.42548476]
+ [0.49085873]
+ [0.60387812]
+ [0.71634349]
+ [0.81606648]
+ [0.89196676]
+ [0.95844875]]
+F1s:
+[[0.15950323]
+ [0.2455642 ]
+ [0.33944332]
+ [0.42328821]
+ [0.48887889]
+ [0.6021829 ]
+ [0.71612994]
+ [0.81551271]
+ [0.89195897]
+ [0.95846848]]
+[95mTest | Accuracy: 63.095, Precision: 0.634, Recall: 0.631, F1: 0.632[0m
+[95m========== Final logs ==========[0m
+[95m----------------------------------------------------------------------------------------------------[0m
+[95mBackward steps:[0m
+[95m4522[0m
+[95mAccuracy:[0m
+[95m63.094935718399476[0m
+[95mPrecision:[0m
+[95m0.6335016038001926[0m
+[95mRecall:[0m
+[95m0.6309493509798931[0m
+[95mF1:[0m
+[95m0.6315478694448466[0m
+
+==================================================
+Total Experiment Emissions: 0.020700371378816123 kg CO2eq
+==================================================

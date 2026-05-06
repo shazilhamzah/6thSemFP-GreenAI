@@ -1,0 +1,103 @@
+args:  Namespace(n_split=3, boot_epochs=20, target_accuracy=90, discount_rs2=2.0, boost_threshold=0.07, dataset='MNIST', n_class=10, cycle=10, n_query=1000, subset=1000000, resolution=32, model='ResNet18', epochs=10, data_path='./data', gpu=[0], print_freq=300, seed=42, workers=0, optimizer='SGD', lr=0.1, min_lr=0.0001, momentum=0.9, weight_decay=0.0005, nesterov=True, scheduler='CosineAnnealingLR', gamma=0.5, step_size=50, batch_size=128, test_batch_size=500, test_interval=1, test_fraction=1.0, balance=False, method='ImprovedUncertainty', submodular='GraphCut', submodular_greedy='LazyGreedy', uncertainty='LeastConfidence', save_path='./RePlayItStraight/results', resume='', device='cuda:0')
+
+  0%|          | 0.00/9.91M [00:00<?, ?B/s]
+  0%|          | 32.8k/9.91M [00:00<01:06, 149kB/s]
+  1%|          | 98.3k/9.91M [00:00<00:41, 236kB/s]
+  2%|▏         | 197k/9.91M [00:00<00:29, 332kB/s] 
+  4%|▍         | 393k/9.91M [00:00<00:17, 553kB/s]
+  8%|▊         | 786k/9.91M [00:01<00:09, 996kB/s]
+ 17%|█▋        | 1.64M/9.91M [00:01<00:04, 1.97MB/s]
+ 33%|███▎      | 3.28M/9.91M [00:01<00:01, 3.75MB/s]
+ 66%|██████▌   | 6.55M/9.91M [00:01<00:00, 7.29MB/s]
+100%|██████████| 9.91M/9.91M [00:01<00:00, 5.56MB/s]
+
+  0%|          | 0.00/28.9k [00:00<?, ?B/s]
+100%|██████████| 28.9k/28.9k [00:00<00:00, 132kB/s]
+100%|██████████| 28.9k/28.9k [00:00<00:00, 132kB/s]
+
+  0%|          | 0.00/1.65M [00:00<?, ?B/s]
+  2%|▏         | 32.8k/1.65M [00:00<00:10, 151kB/s]
+  4%|▍         | 65.5k/1.65M [00:00<00:10, 151kB/s]
+  8%|▊         | 131k/1.65M [00:00<00:06, 219kB/s] 
+ 18%|█▊        | 295k/1.65M [00:00<00:03, 430kB/s]
+ 36%|███▌      | 590k/1.65M [00:01<00:01, 764kB/s]
+ 74%|███████▎  | 1.21M/1.65M [00:01<00:00, 1.48MB/s]
+100%|██████████| 1.65M/1.65M [00:01<00:00, 1.26MB/s]
+
+  0%|          | 0.00/4.54k [00:00<?, ?B/s]
+100%|██████████| 4.54k/4.54k [00:00<00:00, 11.1MB/s]
+im_size:  torch.Size([1, 28, 28])
+| Training on model ResNet18
+MACs:                           457.2 MMac
+Number of parameters:           11.17 M 
+==================== RS2 boot training ====================
+RS2 split size: 20000
+Discount RS2: 2.0
+lr: 0.1, momentum: 0.9, decay: 0.0005
+performing RS2 boot epoch n.1/20
+performing RS2 boot epoch n.2/20
+performing RS2 boot epoch n.3/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.4/20
+performing RS2 boot epoch n.5/20
+performing RS2 boot epoch n.6/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.7/20
+performing RS2 boot epoch n.8/20
+performing RS2 boot epoch n.9/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.10/20
+[95mTest | Accuracy: 94.733, Precision: 0.950, Recall: 0.947, F1: 0.948[0m
+[95mboot epoch 10/20 | Accuracy: 94.73333485921223, Precision: 0.9502446629420352, Recall: 0.9473333333333334, F1: 0.9476515390338701[0m
+performing RS2 boot epoch n.11/20
+performing RS2 boot epoch n.12/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.13/20
+performing RS2 boot epoch n.14/20
+performing RS2 boot epoch n.15/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.16/20
+performing RS2 boot epoch n.17/20
+performing RS2 boot epoch n.18/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+performing RS2 boot epoch n.19/20
+performing RS2 boot epoch n.20/20
+[95mTest | Accuracy: 96.675, Precision: 0.967, Recall: 0.967, F1: 0.967[0m
+[95mboot epoch 20/20 | Accuracy: 96.67500178019206, Precision: 0.9672269849471264, Recall: 0.96675, F1: 0.9667316664087368[0m
+performing RS2 boot epoch n.21/20
+Finished splits, reshuffling data and resplitting!
+Discount RS2: 2.0
+[95mTest | Accuracy: 96.508, Precision: 0.966, Recall: 0.965, F1: 0.965[0m
+[95mBoot completed | Accuracy: 96.50833415985107, Precision: 0.9655525041873402, Recall: 0.9650833333333333, F1: 0.9650107317856296[0m
+Accuracies:
+[94.73333485921223, 96.67500178019206]
+Precisions:
+[np.float64(0.9502446629420352), np.float64(0.9672269849471264)]
+Recalls:
+[np.float64(0.9473333333333334), np.float64(0.96675)]
+F1s:
+[np.float64(0.9476515390338701), np.float64(0.9667316664087368)]
+=> Saving checkpoint for epoch 20, with Prec@1 96.508334.
+========== Pre-Final logs ==========
+----------------------------------------------------------------------------------------------------
+Backward steps:
+1659
+Accuracies:
+[]
+Precisions:
+[]
+Recalls:
+[]
+F1s:
+[]
+Traceback (most recent call last):
+  File "/content/6thSemFP-GreenAI/./RePlayItStraight/src/re_play_it_straight/main_re_play_it_straight.py", line 291, in <module>
+    accuracy, precision, recall, f1 = test(evaluation_loader, network, criterion, epoch, args, rec)
+                                                                       ^^^^^^^^^
+NameError: name 'criterion' is not defined
