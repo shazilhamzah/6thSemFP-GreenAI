@@ -43,7 +43,7 @@ set PYTHONPATH=.\RePlayItStraight
 
 ---
 
-## Running the Code
+## Running the Code (Manual Execution)
 
 ### Full dataset (high-end hardware)
 
@@ -76,18 +76,48 @@ python RePlayItStraight\src\re_play_it_straight\main_re_play_it_straight.py --da
 ```powershell
 python RePlayItStraight\src\re_play_it_straight\main_cross_validation_re_play_it_straight.py --dataset MNIST --subset 200 --batch-size 16 --workers 0
 ```
+## Automated Batch Execution
+
+### Google Colab Pipeline
+If you are running this project on Google Colab (T4 GPU), the entire end-to-end pipeline is consolidated into a single Jupyter Notebook: `GREENAI_AI_PROJ.ipynb`.
+
+Simply open the notebook in Colab and click "Run All". The notebook will automatically:
+
+1. Clone the repository and install dependencies.
+
+2. Download and format the required datasets.
+
+3. Sequentially run the training orchestrator across the datasets.
+
+4. Process the generated telemetry and output visual dashboards.
+
+### Local PowerShell Automation
+To automatically loop through all available datasets (CIFAR10, CIFAR100, TinyImageNet, etc.) sequentially, map the correct class counts, and output terminal logs:
+
+```powershell
+.\Run_All_Datasets.ps1
+```
 
 ---
 
-## Automation
+## Analytics & Dashboards
+As the training runs (locally or in Colab), the framework extracts and saves comprehensive telemetry to the ./RePlayItStraight/results directory.
 
-A PowerShell script handles setup and training in one shot:
+### Data Outputs
+- {dataset}_Log.txt: The raw terminal output capturing the entire training process.
+- {dataset}_cycle_log.csv: Active Learning cycle metrics (Labeled samples, Accuracy, F1, Cumulative Backward Steps).
+- {dataset}_epoch_log.csv: Fine-grained training dynamics (Loss, Learning Rate decay, Epoch accuracy).
+- best_model_{dataset}.pth: Model checkpoints saved upon accuracy improvement.
 
-```powershell
-.\commands_to_train.ps1
-```
+### Dashboards & Visualizations
+You do not need to run separate analytics scripts. The final cells in `GREENAI_AI_PROJ.ipynb` (or your local Jupyter environment) automatically process the CSV logs to generate research-grade visualizations replicating the paper's metrics:
+
+1. **Individual Dashboards**: Multi-panel plots (PNG/SVG) showing Computational Scaling, Data Usage, and Training Dynamics (Loss/Accuracy/Learning Rate) for each dataset.
+
+2. **Cross-Dataset Comparison**: Generates a combined dashboard to compare the performance of algorithms across different datasets on a single axis.
+
+3. **Excel Export**: Automatically exports clean analytical data to `.xlsx` files for native MS Office charting.
 
 ## Notes
-
-- If a CUDA GPU is available, the code will use it automatically.
-- Energy usage is tracked via `codecarbon` and saved to `emissions.csv`.
+- If a CUDA GPU is available, the code will hook into it automatically (cuda:0).
+- Energy usage is tracked via codecarbon. Please note that consumer GPUs might lack NVML energy tracking support; however, Datacenter GPUs (like Colab's T4) will successfully log exact kg CO2eq emissions.
